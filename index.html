@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live F1 Tracker</title>
+  <style>
+    body {
+      background: #111;
+      color: #00ff99;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .label {
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+    .value {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="label">Throttle</div>
+    <div id="throttle" class="value">--</div>
+
+    <div class="label">Brake</div>
+    <div id="brake" class="value">--</div>
+
+    <div class="label">Gear</div>
+    <div id="gear" class="value">--</div>
+  </div>
+
+  <script>
+    const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
+
+    async function fetchData() {
+      try {
+        const res = await fetch(api);
+        if (res.status === 204) return;
+
+        const data = await res.json();
+        document.getElementById('throttle').textContent = data.throttle;
+        document.getElementById('brake').textContent = data.brake;
+        document.getElementById('gear').textContent = data.n_gear;
+      } catch (e) {
+        console.error('Error fetching data:', e);
+      }
+    }
+
+    setInterval(fetchData, 500);
+  </script>
+</body>
+</html>

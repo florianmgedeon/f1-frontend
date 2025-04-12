@@ -27,6 +27,9 @@
 </head>
 <body>
   <div>
+    <div class="label">Speed</div>
+    <div id="speed" class="value">--</div>
+
     <div class="label">Throttle</div>
     <div id="throttle" class="value">--</div>
 
@@ -46,6 +49,7 @@
         if (res.status === 204) return;
 
         const data = await res.json();
+        document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
@@ -58,4 +62,3 @@
   </script>
 </body>
 </html>
-

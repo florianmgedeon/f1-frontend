@@ -9,24 +9,33 @@
       background: #111;
       color: #00ff99;
       font-family: monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .metrics {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
     }
     .label {
       font-size: 1.2rem;
       color: #aaa;
     }
     .value {
-      font-size: 3rem;
-      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    svg {
+      width: 100vw;
+      height: 100vh;
     }
   </style>
 </head>
 <body>
-  <div>
+
+  <div class="metrics">
     <div class="label">Speed</div>
     <div id="speed" class="value">--</div>
 
@@ -40,25 +49,48 @@
     <div id="gear" class="value">--</div>
   </div>
 
+  <!-- Inline SVG with track path and a circle dot -->
+  <svg id="trackSvg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet">
+    <rect width="100%" height="100%" fill="#000" />
+    <path d="M 10.55,172.78 L 10.70,175.42 L 11.15,181.80 L 11.49,187.17 L 11.79,192.50 L 12.33,201.69 L 12.38,202.77 L 13.33,216.85 L 13.77,222.72 L 14.27,230.36 L 14.96,242.41 L 15.26,248.42 L 15.70,256.69 L 16.15,264.43 L 16.50,271.62 L 16.89,278.81 L 17.19,284.92 L 17.63,293.94 L 17.98,301.16 L 18.18,305.66 L 18.48,311.23 L 18.92,320.72 L 19.22,327.37 L 19.52,334.43 L 19.72,340.00 L 19.96,346.34 L 20.36,356.37 L 20.71,363.67 L 21.15,371.84 L 21.30,374.54 L 21.70,380.15 L 21.89,382.85 L 22.29,386.73" 
+          stroke="#00ff99" stroke-width="2" fill="none"/>
+    <circle id="dot" cx="0" cy="0" r="5" fill="red" />
+  </svg>
+
   <script>
-    const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
+    const liveApi = "https://f1-backend-production-f206.up.railway.app/api/live-data";
+    const posApi = "https://f1-backend-production-f206.up.railway.app/api/track-position";
 
-    async function fetchData() {
+    const dot = document.getElementById('dot');
+
+    async function fetchLiveData() {
       try {
-        const res = await fetch(api);
+        const res = await fetch(liveApi);
         if (res.status === 204) return;
-
         const data = await res.json();
+
         document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
       } catch (e) {
-        console.error('Error fetching data:', e);
+        console.error('Error fetching live data:', e);
       }
     }
 
-    setInterval(fetchData, 500);
+    async function updateDot() {
+      try {
+        const res = await fetch(posApi);
+        const { x, y } = await res.json();
+        dot.setAttribute('cx', x * 800);
+        dot.setAttribute('cy', y * 800);
+      } catch (e) {
+        console.error("Dot position fetch failed:", e);
+      }
+    }
+
+    setInterval(fetchLiveData, 500);
+    setInterval(updateDot, 500);
   </script>
 </body>
 </html>

@@ -130,7 +130,11 @@
         document.getElementById('gear').textContent = data.n_gear;
         document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
         document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
+        document.getElementById('interval').textContent = data.interval !== null
+          ? `+${data.interval.toFixed(3)}`
+          : '--';
 
+        // Lap delta
         if (data.lap_delta !== null) {
           const prefix = data.lap_delta < 0 ? '-' : '+';
           document.getElementById('lap_delta').textContent = `${prefix}${Math.abs(data.lap_delta).toFixed(3)}`;
@@ -138,6 +142,7 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
+        // Chart updates
         ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;
@@ -155,21 +160,7 @@
       }
     }
 
-    async function fetchInterval() {
-      try {
-        const res = await fetch(api);
-        if (res.status === 204) return;
-        const data = await res.json();
-        document.getElementById('interval').textContent = data.interval !== null
-          ? `+${data.interval.toFixed(3)}`
-          : '--';
-      } catch (e) {
-        console.error('Interval fetch error:', e);
-      }
-    }
-
     setInterval(fetchLiveData, 500);
-    setInterval(fetchInterval, 10000);
   </script>
 </body>
 </html>

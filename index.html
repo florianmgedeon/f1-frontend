@@ -9,33 +9,24 @@
       background: #111;
       color: #00ff99;
       font-family: monospace;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
-    .metrics {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
     .label {
       font-size: 1.2rem;
       color: #aaa;
     }
     .value {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    svg {
-      width: 100vw;
-      height: 100vh;
+      font-size: 3rem;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
 <body>
-
-  <div class="metrics">
+  <div>
     <div class="label">Speed</div>
     <div id="speed" class="value">--</div>
 
@@ -49,77 +40,25 @@
     <div id="gear" class="value">--</div>
   </div>
 
-  <svg id="trackSvg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet">
-    <rect width="100%" height="100%" fill="#000" />
-    <!-- TRACK PATH -->
-    <path id="trackPath" d="" stroke="#555" stroke-width="2" fill="none" />
-    <!-- CAR DOT -->
-    <circle id="dot" cx="0" cy="0" r="5" fill="red" />
-  </svg>
-
   <script>
-    async function fetchCSV() {
-      const res = await fetch('maps/bahrain_normalized_lap_data.csv');
-      const text = await res.text();
-      const lines = text.trim().split('\n');
-      const coords = lines.slice(1).map(line => {
-        const [x, y] = line.split(',').map(Number);
-        return { x, y };
-      });
-      return coords;
-    }
+    const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
 
-    function createPathFromCoords(coords) {
-      const scale = 800; // matches SVG size
-      if (!coords.length) return '';
-      const d = coords.map((p, i) => {
-        const x = p.x * scale;
-        const y = p.y * scale;
-        return (i === 0 ? 'M' : 'L') + x + ' ' + y;
-      }).join(' ');
-      return d;
-    }
-
-    async function drawTrack() {
-      const coords = await fetchCSV();
-      const d = createPathFromCoords(coords);
-      document.getElementById('trackPath').setAttribute('d', d);
-    }
-
-    async function fetchLiveData() {
+    async function fetchData() {
       try {
-        const res = await fetch('/api/live-data');
-        if (!res.ok) return;
+        const res = await fetch(api);
+        if (res.status === 204) return;
+
         const data = await res.json();
         document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
       } catch (e) {
-        console.error('Error fetching live data:', e);
+        console.error('Error fetching data:', e);
       }
     }
 
-    async function updateDot() {
-      try {
-        const res = await fetch('/api/track-position');
-        if (!res.ok) return;
-        const data = await res.json();
-        const dot = document.getElementById('dot');
-        dot.setAttribute('cx', data.x * 800);
-        dot.setAttribute('cy', data.y * 800);
-      } catch (e) {
-        console.error('Error updating dot:', e);
-      }
-    }
-
-    async function init() {
-      await drawTrack();
-      setInterval(fetchLiveData, 500);
-      setInterval(updateDot, 500);
-    }
-
-    init();
+    setInterval(fetchData, 500);
   </script>
 </body>
 </html>

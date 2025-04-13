@@ -10,56 +10,58 @@
       color: #00ff99;
       font-family: monospace;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      flex-direction: row;
       justify-content: center;
+      align-items: flex-start;
       height: 100vh;
       padding: 2rem;
+      gap: 2rem;
     }
-    .row {
+    .metric-block {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      margin-bottom: 1rem;
     }
     .label {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       color: #aaa;
-      width: 80px;
+      margin-bottom: 0.2rem;
     }
     .value {
-      font-size: 1.5rem;
-      width: 100px;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
       color: #00ff99;
     }
     canvas {
-      margin-left: 1rem;
+      width: 200px;
+      height: 60px;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="row">
+  <div class="metric-block">
     <div class="label">Speed</div>
     <div id="speed" class="value">-- km/h</div>
-    <canvas id="speedChart" width="200" height="50"></canvas>
+    <canvas id="speedChart"></canvas>
   </div>
 
-  <div class="row">
+  <div class="metric-block">
     <div class="label">Throttle</div>
     <div id="throttle" class="value">--</div>
-    <canvas id="throttleChart" width="200" height="50"></canvas>
+    <canvas id="throttleChart"></canvas>
   </div>
 
-  <div class="row">
+  <div class="metric-block">
     <div class="label">Brake</div>
     <div id="brake" class="value">--</div>
-    <canvas id="brakeChart" width="200" height="50"></canvas>
+    <canvas id="brakeChart"></canvas>
   </div>
 
-  <div class="row">
+  <div class="metric-block">
     <div class="label">Gear</div>
     <div id="gear" class="value">--</div>
-    <canvas id="gearChart" width="200" height="50"></canvas>
+    <canvas id="gearChart"></canvas>
   </div>
 
   <script type="module">
@@ -81,13 +83,11 @@
 
         const data = await res.json();
 
-        // Update number displays
         document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
 
-        // Update graphs
         ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;

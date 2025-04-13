@@ -120,7 +120,7 @@
 
         const data = await res.json();
         document.getElementById('interval').textContent = data.interval !== null
-          ? `+${data.interval.toFixed(3)} s`
+          ? `+${data.interval.toFixed(3)}`
           : '--';
       } catch (e) {
         console.error('Interval fetch error:', e);

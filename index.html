@@ -18,30 +18,40 @@
     .label {
       font-size: 1.2rem;
       color: #aaa;
+      margin-top: 1rem;
     }
-    .value {
-      font-size: 3rem;
+    canvas {
       margin-bottom: 1rem;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div>
     <div class="label">Speed</div>
-    <div id="speed" class="value">--</div>
+    <canvas id="speedChart" width="200" height="50"></canvas>
 
     <div class="label">Throttle</div>
-    <div id="throttle" class="value">--</div>
+    <canvas id="throttleChart" width="200" height="50"></canvas>
 
     <div class="label">Brake</div>
-    <div id="brake" class="value">--</div>
+    <canvas id="brakeChart" width="200" height="50"></canvas>
 
     <div class="label">Gear</div>
-    <div id="gear" class="value">--</div>
+    <canvas id="gearChart" width="200" height="50"></canvas>
   </div>
 
-  <script>
+  <script type="module">
+    import { dataBuffer, maxPoints, createChart } from './chart.js';
+
     const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
+
+    const charts = {
+      speed: createChart(document.getElementById('speedChart'), 'Speed'),
+      throttle: createChart(document.getElementById('throttleChart'), 'Throttle'),
+      brake: createChart(document.getElementById('brakeChart'), 'Brake'),
+      gear: createChart(document.getElementById('gearChart'), 'Gear'),
+    };
 
     async function fetchData() {
       try {
@@ -49,10 +59,19 @@
         if (res.status === 204) return;
 
         const data = await res.json();
-        document.getElementById('speed').textContent = data.speed + " km/h";
-        document.getElementById('throttle').textContent = data.throttle;
-        document.getElementById('brake').textContent = data.brake;
-        document.getElementById('gear').textContent = data.n_gear;
+
+        ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
+          const displayKey = key === 'n_gear' ? 'gear' : key;
+          const value = data[key] || 0;
+
+          dataBuffer[displayKey].push(value);
+          if (dataBuffer[displayKey].length > maxPoints) {
+            dataBuffer[displayKey].shift();
+          }
+
+          charts[displayKey].data.datasets[0].data = [...dataBuffer[displayKey]];
+          charts[displayKey].update();
+        });
       } catch (e) {
         console.error('Error fetching data:', e);
       }

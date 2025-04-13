@@ -43,8 +43,18 @@
   <div class="metric-block">
     <div class="label">Position</div>
     <div id="position" class="value">--</div>
+  </div>
+
+  <div class="metric-block">
     <div class="label">Interval</div>
     <div id="interval" class="value">--</div>
+  </div>
+
+  <div class="metric-block">
+    <div class="label">Lap Time</div>
+    <div id="lap_time" class="value">--</div>
+    <div class="label">Lap Delta</div>
+    <div id="lap_delta" class="value">--</div>
   </div>
 
   <div class="metric-block">
@@ -83,19 +93,39 @@
       gear: createChart(document.getElementById('gearChart'), 'Gear'),
     };
 
-    async function fetchFastData() {
+    function formatLapTime(seconds) {
+      if (seconds === null) return "--";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      const millis = Math.floor((seconds % 1) * 1000);
+      return `${mins}:${secs.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
+    }
+
+    async function fetchLiveData() {
       try {
         const res = await fetch(api);
         if (res.status === 204) return;
 
         const data = await res.json();
 
+        // Main data
         document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
         document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
 
+        // Lap time and delta
+        document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
+
+        if (data.lap_delta !== null) {
+          const prefix = data.lap_delta < 0 ? '-' : '+';
+          document.getElementById('lap_delta').textContent = `${prefix}${Math.abs(data.lap_delta).toFixed(3)}`;
+        } else {
+          document.getElementById('lap_delta').textContent = '--';
+        }
+
+        // Chart updates
         ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;
@@ -109,7 +139,7 @@
           charts[displayKey].update();
         });
       } catch (e) {
-        console.error('Fast fetch error:', e);
+        console.error('Live data fetch error:', e);
       }
     }
 
@@ -127,8 +157,8 @@
       }
     }
 
-    setInterval(fetchFastData, 500);
-    setInterval(fetchInterval, 10000);
+    setInterval(fetchLiveData, 500);
+    setInterval(fetchInterval, 500);
   </script>
 </body>
 </html>

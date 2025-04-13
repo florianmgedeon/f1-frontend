@@ -15,23 +15,33 @@
       align-items: flex-start;
       height: 100vh;
       padding: 2rem;
+      gap: 5rem;
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
       gap: 2rem;
     }
+
     .metric-block {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     .label {
       font-size: 1.1rem;
       color: #aaa;
       margin-bottom: 0.2rem;
     }
+
     .value {
       font-size: 2rem;
       margin-bottom: 0.5rem;
       color: #00ff99;
     }
+
     canvas {
       width: 200px;
       height: 60px;
@@ -40,45 +50,52 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="metric-block">
-    <div class="label">Position</div>
-    <div id="position" class="value">--</div>
+  <div class="column">
+    <div class="metric-block">
+      <div class="label">Position</div>
+      <div id="position" class="value">--</div>
+    </div>
+
+    <div class="metric-block">
+      <div class="label">Interval</div>
+      <div id="interval" class="value">--</div>
+    </div>
+
+    <div class="metric-block">
+      <div class="label">Lap Time</div>
+      <div id="lap_time" class="value">--</div>
+    </div>
+
+    <div class="metric-block">
+      <div class="label">Lap Delta</div>
+      <div id="lap_delta" class="value">--</div>
+    </div>
   </div>
 
-  <div class="metric-block">
-    <div class="label">Interval</div>
-    <div id="interval" class="value">--</div>
-  </div>
+  <div class="column">
+    <div class="metric-block">
+      <div class="label">Speed</div>
+      <div id="speed" class="value">-- km/h</div>
+      <canvas id="speedChart"></canvas>
+    </div>
 
-  <div class="metric-block">
-    <div class="label">Lap Time</div>
-    <div id="lap_time" class="value">--</div>
-    <div class="label">Lap Delta</div>
-    <div id="lap_delta" class="value">--</div>
-  </div>
+    <div class="metric-block">
+      <div class="label">Throttle</div>
+      <div id="throttle" class="value">--</div>
+      <canvas id="throttleChart"></canvas>
+    </div>
 
-  <div class="metric-block">
-    <div class="label">Speed</div>
-    <div id="speed" class="value">-- km/h</div>
-    <canvas id="speedChart"></canvas>
-  </div>
+    <div class="metric-block">
+      <div class="label">Brake</div>
+      <div id="brake" class="value">--</div>
+      <canvas id="brakeChart"></canvas>
+    </div>
 
-  <div class="metric-block">
-    <div class="label">Throttle</div>
-    <div id="throttle" class="value">--</div>
-    <canvas id="throttleChart"></canvas>
-  </div>
-
-  <div class="metric-block">
-    <div class="label">Brake</div>
-    <div id="brake" class="value">--</div>
-    <canvas id="brakeChart"></canvas>
-  </div>
-
-  <div class="metric-block">
-    <div class="label">Gear</div>
-    <div id="gear" class="value">--</div>
-    <canvas id="gearChart"></canvas>
+    <div class="metric-block">
+      <div class="label">Gear</div>
+      <div id="gear" class="value">--</div>
+      <canvas id="gearChart"></canvas>
+    </div>
   </div>
 
   <script type="module">
@@ -105,17 +122,13 @@
       try {
         const res = await fetch(api);
         if (res.status === 204) return;
-
         const data = await res.json();
 
-        // Main data
         document.getElementById('speed').textContent = data.speed + " km/h";
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
         document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
-
-        // Lap time and delta
         document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
 
         if (data.lap_delta !== null) {
@@ -125,7 +138,6 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
-        // Chart updates
         ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;
@@ -147,7 +159,6 @@
       try {
         const res = await fetch(api);
         if (res.status === 204) return;
-
         const data = await res.json();
         document.getElementById('interval').textContent = data.interval !== null
           ? `+${data.interval.toFixed(3)}`
@@ -158,7 +169,7 @@
     }
 
     setInterval(fetchLiveData, 500);
-    setInterval(fetchInterval, 500);
+    setInterval(fetchInterval, 10000);
   </script>
 </body>
 </html>

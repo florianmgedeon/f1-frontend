@@ -43,6 +43,8 @@
   <div class="metric-block">
     <div class="label">Position</div>
     <div id="position" class="value">--</div>
+    <div class="label">Interval</div>
+    <div id="interval" class="value">--</div>
   </div>
 
   <div class="metric-block">
@@ -81,7 +83,7 @@
       gear: createChart(document.getElementById('gearChart'), 'Gear'),
     };
 
-    async function fetchData() {
+    async function fetchFastData() {
       try {
         const res = await fetch(api);
         if (res.status === 204) return;
@@ -107,11 +109,26 @@
           charts[displayKey].update();
         });
       } catch (e) {
-        console.error('Error fetching data:', e);
+        console.error('Fast fetch error:', e);
       }
     }
 
-    setInterval(fetchData, 500);
+    async function fetchInterval() {
+      try {
+        const res = await fetch(api);
+        if (res.status === 204) return;
+
+        const data = await res.json();
+        document.getElementById('interval').textContent = data.interval !== null
+          ? `+${data.interval.toFixed(3)} s`
+          : '--';
+      } catch (e) {
+        console.error('Interval fetch error:', e);
+      }
+    }
+
+    setInterval(fetchFastData, 500);
+    setInterval(fetchInterval, 5000);
   </script>
 </body>
 </html>

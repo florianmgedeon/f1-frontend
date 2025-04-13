@@ -44,7 +44,7 @@
 
     canvas {
       width: 200px;
-      height: 60px;
+      height: 200px;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -75,8 +75,8 @@
   <div class="column">
     <div class="metric-block">
       <div class="label">Speed</div>
+      <canvas id="speedGauge"></canvas>
       <div id="speed" class="value">-- km/h</div>
-      <canvas id="speedChart"></canvas>
     </div>
 
     <div class="metric-block">
@@ -103,8 +103,29 @@
 
     const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
 
+    const maxSpeed = 350;
+    const speedGauge = new Chart(document.getElementById("speedGauge"), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [0, maxSpeed],
+          backgroundColor: ['#00ff99', '#222'],
+          borderWidth: 0,
+          circumference: 270,
+          rotation: 225,
+          cutout: '80%',
+        }]
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false },
+        }
+      }
+    });
+
     const charts = {
-      speed: createChart(document.getElementById('speedChart'), 'Speed'),
       throttle: createChart(document.getElementById('throttleChart'), 'Throttle'),
       brake: createChart(document.getElementById('brakeChart'), 'Brake'),
       gear: createChart(document.getElementById('gearChart'), 'Gear'),
@@ -125,6 +146,10 @@
         const data = await res.json();
 
         document.getElementById('speed').textContent = data.speed + " km/h";
+        speedGauge.data.datasets[0].data[0] = data.speed;
+        speedGauge.data.datasets[0].data[1] = maxSpeed - data.speed;
+        speedGauge.update();
+
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
@@ -142,8 +167,8 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
-        // Chart updates
-        ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
+        // Update other charts
+        ['throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;
 

@@ -50,6 +50,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <!-- Left Column: Position, Interval, Lap Time, Delta -->
   <div class="column">
     <div class="metric-block">
       <div class="label">Position</div>
@@ -72,6 +73,7 @@
     </div>
   </div>
 
+  <!-- Right Column: Speed, Throttle, Brake, Gear -->
   <div class="column">
     <div class="metric-block">
       <div class="label">Speed</div>
@@ -129,7 +131,6 @@
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
         document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
-        document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
 
         if (data.lap_delta !== null) {
           const prefix = data.lap_delta < 0 ? '-' : '+';
@@ -168,8 +169,25 @@
       }
     }
 
+    async function fetchLapTime() {
+      try {
+        const res = await fetch(api);
+        if (res.status === 204) return;
+        const data = await res.json();
+
+        if (data.lap_time !== null) {
+          document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
+        } else {
+          document.getElementById('lap_time').textContent = "--";
+        }
+      } catch (e) {
+        console.error('Lap time fetch error:', e);
+      }
+    }
+
     setInterval(fetchLiveData, 500);
     setInterval(fetchInterval, 10000);
+    setInterval(fetchLapTime, 1)
   </script>
 </body>
 </html>

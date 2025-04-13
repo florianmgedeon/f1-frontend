@@ -42,6 +42,30 @@
       color: #00ff99;
     }
 
+    .gauge-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+
+    .gauge-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .speed-number {
+      font-size: 2.2rem;
+      color: #00ff99;
+    }
+
+    .speed-unit {
+      font-size: 1rem;
+      color: #00ff99;
+    }
+
     canvas {
       width: 200px;
       height: 200px;
@@ -75,8 +99,13 @@
   <div class="column">
     <div class="metric-block">
       <div class="label">Speed</div>
-      <canvas id="speedGauge"></canvas>
-      <div id="speed" class="value">-- km/h</div>
+      <div class="gauge-container">
+        <canvas id="speedGauge"></canvas>
+        <div class="gauge-inner">
+          <div id="speed-number" class="speed-number">--</div>
+          <div class="speed-unit">km/h</div>
+        </div>
+      </div>
     </div>
 
     <div class="metric-block">
@@ -145,7 +174,7 @@
         if (res.status === 204) return;
         const data = await res.json();
 
-        document.getElementById('speed').textContent = data.speed + " km/h";
+        document.getElementById('speed-number').textContent = data.speed;
         speedGauge.data.datasets[0].data[0] = data.speed;
         speedGauge.data.datasets[0].data[1] = maxSpeed - data.speed;
         speedGauge.update();
@@ -167,7 +196,6 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
-        // Update other charts
         ['throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;

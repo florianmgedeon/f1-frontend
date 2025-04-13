@@ -41,6 +41,11 @@
 </head>
 <body>
   <div class="metric-block">
+    <div class="label">Position</div>
+    <div id="position" class="value">--</div>
+  </div>
+
+  <div class="metric-block">
     <div class="label">Speed</div>
     <div id="speed" class="value">-- km/h</div>
     <canvas id="speedChart"></canvas>
@@ -87,6 +92,7 @@
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;
+        document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
 
         ['speed', 'throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;

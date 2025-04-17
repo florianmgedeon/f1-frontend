@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Live F1 Tracker</title>
 
-  <!-- Import Inter font from Google Fonts -->
+  <!-- Inter font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -51,10 +51,11 @@
     }
 
     .label {
-      font-size: 1.1rem;
-      color: #e9eced;
+      font-size: 1rem;
+      color: #a2a2a3;
+      text-transform: uppercase;
+      font-weight: 400;
       margin-bottom: 0.2rem;
-      font-weight: 500;
     }
 
     .value {
@@ -86,8 +87,9 @@
 
     .speed-unit {
       font-size: 1rem;
-      color: #e9eced;
-      font-weight: 500;
+      color: #a2a2a3;
+      text-transform: uppercase;
+      font-weight: 400;
     }
 
     .bottom-row {
@@ -155,19 +157,16 @@
   <div class="bottom-row">
     <div class="metric-block">
       <div class="label">Throttle</div>
-      <div id="throttle" class="value">--</div>
       <canvas id="throttleChart"></canvas>
     </div>
 
     <div class="metric-block">
       <div class="label">Brake</div>
-      <div id="brake" class="value">--</div>
       <canvas id="brakeChart"></canvas>
     </div>
 
     <div class="metric-block">
       <div class="label">Gear</div>
-      <div id="gear" class="value">--</div>
       <canvas id="gearChart"></canvas>
     </div>
   </div>
@@ -224,9 +223,6 @@
         speedGauge.data.datasets[0].data[1] = maxSpeed - data.speed;
         speedGauge.update();
 
-        document.getElementById('throttle').textContent = data.throttle;
-        document.getElementById('brake').textContent = data.brake;
-        document.getElementById('gear').textContent = data.n_gear;
         document.getElementById('position').textContent = data.position ? `#${data.position}` : '--';
         document.getElementById('lap_time').textContent = formatLapTime(data.lap_time);
         document.getElementById('interval').textContent = data.interval !== null
@@ -240,6 +236,7 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
+        // Update charts
         ['throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;

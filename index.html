@@ -6,8 +6,8 @@
   <title>Live F1 Tracker</title>
   <style>
     body {
-      background: #111;
-      color: #00ff99;
+      background: #0c1014;
+      color: #fff;
       font-family: monospace;
       display: flex;
       flex-direction: column;
@@ -27,17 +27,18 @@
       border: 1px solid #333;
     }
 
-    .top-row {
+    .layout {
       display: flex;
       flex-direction: row;
-      gap: 5rem;
+      gap: 6rem;
       align-items: flex-start;
     }
 
-    .info-block {
+    .left-column {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 2rem;
+      align-items: flex-start;
     }
 
     .metric-block {
@@ -48,14 +49,24 @@
 
     .label {
       font-size: 1.1rem;
-      color: #aaa;
+      color: #e9eced;
       margin-bottom: 0.2rem;
     }
 
     .value {
       font-size: 2rem;
       margin-bottom: 0.5rem;
-      color: #00ff99;
+      color: #fff;
+    }
+
+    .driver-title {
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .team-label {
+      font-size: 1rem;
+      color: #e9eced;
     }
 
     .gauge-container {
@@ -74,23 +85,30 @@
 
     .speed-number {
       font-size: 2.2rem;
-      color: #00ff99;
+      color: #fff;
     }
 
     .speed-unit {
       font-size: 1rem;
-      color: #00ff99;
-    }
-
-    .bottom-row {
-      display: flex;
-      flex-direction: row;
-      gap: 5rem;
+      color: #e9eced;
     }
 
     canvas {
       width: 200px;
       height: 100px;
+    }
+
+    .above-brake,
+    .above-gear {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+    }
+
+    .bottom-charts {
+      display: flex;
+      flex-direction: row;
+      gap: 5rem;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -104,63 +122,59 @@
     </svg>
   </div> -->
 
-  <div class="top-row">
-    <div class="info-block">
-      <div>
-        <div class="value" style="font-size: 1.5rem;">Max Verstappen</div>
-        <div class="label" style="font-size: 1rem;">Red Bull Racing</div>
-      </div>
+  <div class="layout">
+    <div class="left-column">
+      <div class="driver-title">Max Verstappen</div>
+      <div class="team-label">Red Bull Racing</div>
 
       <div class="metric-block">
-        <div class="label">Position</div>
-        <div id="position" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Interval</div>
-        <div id="interval" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Lap Time</div>
-        <div id="lap_time" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Lap Delta</div>
-        <div id="lap_delta" class="value">--</div>
-      </div>
-    </div>
-
-    <div class="metric-block">
-      <div class="label">Speed</div>
-      <div class="gauge-container">
-        <canvas id="speedGauge"></canvas>
-        <div class="gauge-inner">
-          <div id="speed-number" class="speed-number">--</div>
-          <div class="speed-unit">km/h</div>
+        <div class="label">Speed</div>
+        <div class="gauge-container">
+          <canvas id="speedGauge"></canvas>
+          <div class="gauge-inner">
+            <div id="speed-number" class="speed-number">--</div>
+            <div class="speed-unit">km/h</div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="bottom-row">
-    <div class="metric-block">
-      <div class="label">Throttle</div>
-      <div id="throttle" class="value">--</div>
-      <canvas id="throttleChart"></canvas>
-    </div>
+      <div class="metric-block">
+        <div class="label">Throttle</div>
+        <div id="throttle" class="value">--</div>
+        <canvas id="throttleChart"></canvas>
+      </div>
 
-    <div class="metric-block">
-      <div class="label">Brake</div>
-      <div id="brake" class="value">--</div>
-      <canvas id="brakeChart"></canvas>
-    </div>
+      <div class="metric-block">
+        <div class="label">Brake</div>
+        <div class="above-brake">
+          <div class="metric-block">
+            <div class="label">Position</div>
+            <div id="position" class="value">--</div>
+          </div>
+          <div class="metric-block">
+            <div class="label">Interval</div>
+            <div id="interval" class="value">--</div>
+          </div>
+        </div>
+        <div id="brake" class="value">--</div>
+        <canvas id="brakeChart"></canvas>
+      </div>
 
-    <div class="metric-block">
-      <div class="label">Gear</div>
-      <div id="gear" class="value">--</div>
-      <canvas id="gearChart"></canvas>
+      <div class="metric-block">
+        <div class="label">Gear</div>
+        <div class="above-gear">
+          <div class="metric-block">
+            <div class="label">Lap Time</div>
+            <div id="lap_time" class="value">--</div>
+          </div>
+          <div class="metric-block">
+            <div class="label">Lap Delta</div>
+            <div id="lap_delta" class="value">--</div>
+          </div>
+        </div>
+        <div id="gear" class="value">--</div>
+        <canvas id="gearChart"></canvas>
+      </div>
     </div>
   </div>
 
@@ -175,7 +189,7 @@
       data: {
         datasets: [{
           data: [0, maxSpeed],
-          backgroundColor: ['#00ff99', '#222'],
+          backgroundColor: ['#3685cd', '#222'],
           borderWidth: 0,
           circumference: 270,
           rotation: 225,
@@ -192,9 +206,9 @@
     });
 
     const charts = {
-      throttle: createChart(document.getElementById('throttleChart'), 'Throttle'),
-      brake: createChart(document.getElementById('brakeChart'), 'Brake'),
-      gear: createChart(document.getElementById('gearChart'), 'Gear'),
+      throttle: createChart(document.getElementById('throttleChart'), 'Throttle', '#3685cd'),
+      brake: createChart(document.getElementById('brakeChart'), 'Brake', '#3685cd'),
+      gear: createChart(document.getElementById('gearChart'), 'Gear', '#3685cd'),
     };
 
     function formatLapTime(seconds) {

@@ -14,7 +14,7 @@ export const createChart = (ctx, label) =>
       datasets: [{
         label,
         data: [],
-        borderColor: "#00ff99",
+        borderColor: "#3685cd", // Updated line color
         borderWidth: 2,
         pointRadius: 0,
         fill: false,

@@ -27,16 +27,23 @@
       border: 1px solid #333;
     }
 
-    .column {
+    .top-row {
       display: flex;
       flex-direction: row;
       gap: 5rem;
+      align-items: flex-start;
+    }
+
+    .info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     .metric-block {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
     }
 
     .label {
@@ -75,9 +82,15 @@
       color: #00ff99;
     }
 
+    .bottom-row {
+      display: flex;
+      flex-direction: row;
+      gap: 5rem;
+    }
+
     canvas {
       width: 200px;
-      height: 200px;
+      height: 100px;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -91,9 +104,13 @@
     </svg>
   </div> -->
 
-  <!-- 📊 TELEMETRY DATA -->
-  <div class="column">
-    <div class="column">
+  <div class="top-row">
+    <div class="info-block">
+      <div>
+        <div class="value" style="font-size: 1.5rem;">Max Verstappen</div>
+        <div class="label" style="font-size: 1rem;">Red Bull Racing</div>
+      </div>
+
       <div class="metric-block">
         <div class="label">Position</div>
         <div id="position" class="value">--</div>
@@ -115,35 +132,35 @@
       </div>
     </div>
 
-    <div class="column">
-      <div class="metric-block">
-        <div class="label">Speed</div>
-        <div class="gauge-container">
-          <canvas id="speedGauge"></canvas>
-          <div class="gauge-inner">
-            <div id="speed-number" class="speed-number">--</div>
-            <div class="speed-unit">km/h</div>
-          </div>
+    <div class="metric-block">
+      <div class="label">Speed</div>
+      <div class="gauge-container">
+        <canvas id="speedGauge"></canvas>
+        <div class="gauge-inner">
+          <div id="speed-number" class="speed-number">--</div>
+          <div class="speed-unit">km/h</div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="metric-block">
-        <div class="label">Throttle</div>
-        <div id="throttle" class="value">--</div>
-        <canvas id="throttleChart"></canvas>
-      </div>
+  <div class="bottom-row">
+    <div class="metric-block">
+      <div class="label">Throttle</div>
+      <div id="throttle" class="value">--</div>
+      <canvas id="throttleChart"></canvas>
+    </div>
 
-      <div class="metric-block">
-        <div class="label">Brake</div>
-        <div id="brake" class="value">--</div>
-        <canvas id="brakeChart"></canvas>
-      </div>
+    <div class="metric-block">
+      <div class="label">Brake</div>
+      <div id="brake" class="value">--</div>
+      <canvas id="brakeChart"></canvas>
+    </div>
 
-      <div class="metric-block">
-        <div class="label">Gear</div>
-        <div id="gear" class="value">--</div>
-        <canvas id="gearChart"></canvas>
-      </div>
+    <div class="metric-block">
+      <div class="label">Gear</div>
+      <div id="gear" class="value">--</div>
+      <canvas id="gearChart"></canvas>
     </div>
   </div>
 
@@ -194,13 +211,11 @@
         if (res.status === 204) return;
         const data = await res.json();
 
-        // Speed gauge
         document.getElementById('speed-number').textContent = data.speed;
         speedGauge.data.datasets[0].data[0] = data.speed;
         speedGauge.data.datasets[0].data[1] = maxSpeed - data.speed;
         speedGauge.update();
 
-        // Other metrics
         document.getElementById('throttle').textContent = data.throttle;
         document.getElementById('brake').textContent = data.brake;
         document.getElementById('gear').textContent = data.n_gear;

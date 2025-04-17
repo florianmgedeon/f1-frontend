@@ -17,12 +17,12 @@
       flex-direction: column;
       align-items: center;
       padding: 2rem;
-      gap: 4rem;
+      gap: 3rem;
     }
 
     .dashboard {
       display: flex;
-      gap: 4rem;
+      gap: 6rem;
       align-items: flex-start;
     }
 
@@ -73,7 +73,13 @@
       font-weight: 400;
     }
 
-    .right-side {
+    .main-right {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .metrics-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 2rem 4rem;
@@ -129,38 +135,40 @@
       </div>
     </div>
 
-    <div class="right-side">
-      <div class="metric-block">
-        <div class="label">Position</div>
-        <div id="position" class="value">--</div>
+    <div class="main-right">
+      <div class="metrics-grid">
+        <div class="metric-block">
+          <div class="label">Position</div>
+          <div id="position" class="value">--</div>
+        </div>
+        <div class="metric-block">
+          <div class="label">Interval</div>
+          <div id="interval" class="value">--</div>
+        </div>
+        <div class="metric-block">
+          <div class="label">Lap Delta</div>
+          <div id="lap_delta" class="value">--</div>
+        </div>
+        <div class="metric-block">
+          <div class="label">Lap Time</div>
+          <div id="lap_time" class="value">--</div>
+        </div>
       </div>
-      <div class="metric-block">
-        <div class="label">Interval</div>
-        <div id="interval" class="value">--</div>
-      </div>
-      <div class="metric-block">
-        <div class="label">Lap Delta</div>
-        <div id="lap_delta" class="value">--</div>
-      </div>
-      <div class="metric-block">
-        <div class="label">Lap Time</div>
-        <div id="lap_time" class="value">--</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="bottom-row">
-    <div class="metric-block">
-      <div class="label">Throttle</div>
-      <canvas id="throttleChart"></canvas>
-    </div>
-    <div class="metric-block">
-      <div class="label">Brake</div>
-      <canvas id="brakeChart"></canvas>
-    </div>
-    <div class="metric-block">
-      <div class="label">Gear</div>
-      <canvas id="gearChart"></canvas>
+      <div class="bottom-row">
+        <div class="metric-block">
+          <div class="label">Throttle</div>
+          <canvas id="throttleChart"></canvas>
+        </div>
+        <div class="metric-block">
+          <div class="label">Brake</div>
+          <canvas id="brakeChart"></canvas>
+        </div>
+        <div class="metric-block">
+          <div class="label">Gear</div>
+          <canvas id="gearChart"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -20,49 +20,30 @@
       gap: 4rem;
     }
 
-    #map-container {
-      position: relative;
-    }
-
-    svg#track {
-      width: 800px;
-      height: 800px;
-      background: #000;
-      border: 1px solid #333;
-    }
-
-    .top-row {
+    .dashboard {
       display: flex;
-      flex-direction: row;
-      gap: 5rem;
+      gap: 4rem;
       align-items: flex-start;
     }
 
-    .info-block {
+    .left-side {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-    }
-
-    .metric-block {
-      display: flex;
-      flex-direction: column;
+      gap: 1.5rem;
       align-items: flex-start;
     }
 
-    .label {
+    .driver-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .team-name {
       font-size: 1rem;
       color: #a2a2a3;
-      text-transform: uppercase;
       font-weight: 400;
-      margin-bottom: 0.2rem;
-    }
-
-    .value {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      color: #ffffff;
-      font-weight: 600;
+      text-transform: uppercase;
     }
 
     .gauge-container {
@@ -92,6 +73,33 @@
       font-weight: 400;
     }
 
+    .right-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 4rem;
+    }
+
+    .metric-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .label {
+      font-size: 1rem;
+      color: #a2a2a3;
+      text-transform: uppercase;
+      font-weight: 400;
+      margin-bottom: 0.2rem;
+    }
+
+    .value {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
     .bottom-row {
       display: flex;
       flex-direction: row;
@@ -107,42 +115,36 @@
 </head>
 <body>
 
-  <div class="top-row">
-    <div class="info-block">
-      <div>
-        <div class="value" style="font-size: 1.5rem;">Max Verstappen</div>
-        <div class="label" style="font-size: 1rem;">Red Bull Racing</div>
-      </div>
+  <div class="dashboard">
+    <div class="left-side">
+      <div class="driver-name">Max Verstappen</div>
+      <div class="team-name">Red Bull Racing</div>
 
-      <div class="metric-block">
-        <div class="label">Position</div>
-        <div id="position" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Interval</div>
-        <div id="interval" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Lap Time</div>
-        <div id="lap_time" class="value">--</div>
-      </div>
-
-      <div class="metric-block">
-        <div class="label">Lap Delta</div>
-        <div id="lap_delta" class="value">--</div>
-      </div>
-    </div>
-
-    <div class="metric-block">
-      <div class="label">Speed</div>
       <div class="gauge-container">
         <canvas id="speedGauge"></canvas>
         <div class="gauge-inner">
           <div id="speed-number" class="speed-number">--</div>
-          <div class="speed-unit">km/h</div>
+          <div class="speed-unit">KM/H</div>
         </div>
+      </div>
+    </div>
+
+    <div class="right-side">
+      <div class="metric-block">
+        <div class="label">Position</div>
+        <div id="position" class="value">--</div>
+      </div>
+      <div class="metric-block">
+        <div class="label">Interval</div>
+        <div id="interval" class="value">--</div>
+      </div>
+      <div class="metric-block">
+        <div class="label">Lap Delta</div>
+        <div id="lap_delta" class="value">--</div>
+      </div>
+      <div class="metric-block">
+        <div class="label">Lap Time</div>
+        <div id="lap_time" class="value">--</div>
       </div>
     </div>
   </div>
@@ -152,12 +154,10 @@
       <div class="label">Throttle</div>
       <canvas id="throttleChart"></canvas>
     </div>
-
     <div class="metric-block">
       <div class="label">Brake</div>
       <canvas id="brakeChart"></canvas>
     </div>
-
     <div class="metric-block">
       <div class="label">Gear</div>
       <canvas id="gearChart"></canvas>
@@ -229,7 +229,6 @@
           document.getElementById('lap_delta').textContent = '--';
         }
 
-        // Update charts
         ['throttle', 'brake', 'n_gear'].forEach(key => {
           const displayKey = key === 'n_gear' ? 'gear' : key;
           const value = data[key] || 0;

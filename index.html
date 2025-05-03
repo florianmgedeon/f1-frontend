@@ -116,7 +116,20 @@
       width: 200px;
       height: 100px;
     }
+
+    .track-container {
+      width: 800px;
+      height: 600px;
+      overflow: scroll;
+      border: 2px solid #3685cd;
+      background: #111;
+    }
+
+    #trackMap {
+      background-color: #111;
+    }
   </style>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -172,10 +185,16 @@
     </div>
   </div>
 
+  <!-- TRACK MAP WINDOW -->
+  <div class="track-container">
+    <canvas id="trackMap" width="8000" height="8000"></canvas>
+  </div>
+
   <script type="module">
     import { dataBuffer, maxPoints, createChart } from './chart.js';
 
-    const api = "https://f1-backend-production-f206.up.railway.app/api/live-data";
+    const api = "/api/live-data";
+    const locationApi = "/api/location";
     const maxSpeed = 350;
 
     const speedGauge = new Chart(document.getElementById("speedGauge"), {
@@ -254,7 +273,53 @@
       }
     }
 
+    // TRACK DRAWING LOGIC
+    const ctx = document.getElementById("trackMap").getContext("2d");
+    const pathPoints = [];
+
+    function drawTrack() {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      // Draw path
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < pathPoints.length; i++) {
+        const pt = pathPoints[i];
+        if (i === 0) {
+          ctx.moveTo(pt.x, pt.y);
+        } else {
+          ctx.lineTo(pt.x, pt.y);
+        }
+      }
+      ctx.stroke();
+
+      // Draw current position
+      if (pathPoints.length > 0) {
+        const { x, y } = pathPoints[pathPoints.length - 1];
+        ctx.fillStyle = "#3685cd";
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    }
+
+    async function fetchLocation() {
+      try {
+        const res = await fetch(locationApi);
+        const data = await res.json();
+        if (data.length > 0) {
+          const { x, y } = data[data.length - 1];
+          pathPoints.push({ x, y });
+          drawTrack();
+        }
+      } catch (err) {
+        console.error("Location fetch error:", err);
+      }
+    }
+
     setInterval(fetchLiveData, 500);
+    setInterval(fetchLocation, 1000);
   </script>
 </body>
 </html>
